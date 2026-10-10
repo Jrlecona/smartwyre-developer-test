@@ -44,3 +44,31 @@ You are free to use any frameworks/NuGet packages that you see fit. You should p
 Feel free to use code comments to describe your changes. You are also welcome to update this readme with any important details for us to consider.
 
 Once you have completed the exercise either ensure your repository is available publicly or contact the hiring manager to set up a private share.
+
+## Solution overview
+
+`RebateService` coordinates the rebate calculation workflow:
+
+1. Retrieve the requested rebate and product.
+2. Select the calculator registered for the rebate's incentive type.
+3. Validate and calculate the rebate through that calculator.
+4. Store successful calculations.
+
+Data stores and calculators are injected through interfaces, allowing the service to be tested with controlled implementations.
+
+Each incentive type has a separate `IRebateCalculator` implementation:
+
+- `FixedCashAmountCalculator`
+- `FixedRateRebateCalculator`
+- `AmountPerUomCalculator`
+
+This removes the incentive `switch` from `RebateService`. A new incentive can be introduced by implementing `IRebateCalculator` and registering it at the application's composition root without changing the service.
+
+## Build and test
+
+The solution requires the .NET 10 SDK.
+
+```bash
+dotnet restore Smartwyre.DeveloperTest.sln
+dotnet build Smartwyre.DeveloperTest.sln --no-restore
+dotnet test Smartwyre.DeveloperTest.sln --no-build
